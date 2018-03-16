@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!--script src="https://d3js.org/d3.v3.min.js"></script-->
+<!--script src="https://wzrd.in/standalone/function-plot@1.18.1"></script-->
+<script src="d3.v3.min.js"></script>
+<script src="function-plot.js"></script>
+</head>
+<body>
+<div id='switchrate'></div>
+<div class="slidecontainer">
+  1<input type="range" min="1" max="1000" value="200" class="slider" id="tRange">1000
+  <p>t/tau=<span id="ttaurate"></span></p>
+  1<input type="range" min="1" max="500" value="109" class="slider" id="deltaRange">500
+  <p>delta=<span id="delta"></span></p>
+  1<input type="range" min="1" max="150" value="96" class="slider" id="IcRange">150
+  <p>Ic=<span id="Ic"></span>mA</p>
+</div>
+<script>
+var update = function() {
+    options.data[0].fn=
+        '1-exp(-' + t_slider.value + '*exp(-' + delta_slider.value + '*(1-x/' + ic_slider.value/100 + ')^2))';
+    functionPlot(options)
+}
+var t_slider = document.getElementById("tRange");
+var t_output = document.getElementById("ttaurate");
+var delta_slider = document.getElementById("deltaRange");
+var delta_output = document.getElementById("delta");
+var ic_slider = document.getElementById("IcRange");
+var ic_output = document.getElementById("Ic");
+var options  = {
+  title: 'P=1-exp(-t/tau*exp(-delta*(1-I/Ic)^2))',
+  target: '#switchrate',
+  xAxis: {domain: [0, 1],label:'mA'},
+  yAxis: {domain: [0, 1],label:'Psw'},
+  grid: true,
+  data: [{
+    fn: '1-exp(-' + t_slider.value + '*exp(-' + delta_slider.value + '*(1-x/' + ic_slider.value/100 + ')^2))'
+  }]
+};
+t_output.innerHTML = t_slider.value;
+delta_output.innerHTML = delta_slider.value;
+ic_output.innerHTML = ic_slider.value;
+t_slider.oninput = function() {
+    t_output.innerHTML = this.value;
+    update()
+}
+delta_slider.oninput = function() {
+    delta_output.innerHTML = this.value;
+    update()
+}
+ic_slider.oninput = function() {
+    ic_output.innerHTML = this.value/100;
+    update()
+}
+functionPlot(options)
+</script>
+</body>
+</html>
